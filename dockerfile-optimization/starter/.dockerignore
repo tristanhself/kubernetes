@@ -1,0 +1,23 @@
+# Exclude Git metadata from the build context.
+.git
+
+# Exclude Python bytecode and cache directories from the image context.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Exclude local virtual environments from the build context.
+.venv/
+venv/
+env/
+
+# Exclude local environment files so secrets are not copied accidentally.
+.env
+.env.*
+
+# Exclude local logs and temporary files from the build context.
+*.log
+tmp/
+*.tmp

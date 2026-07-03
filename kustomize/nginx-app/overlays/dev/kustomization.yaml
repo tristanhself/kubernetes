@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+namespace: dev
+
+namePrefix: dev-
+nameSuffix: -alpha
+
+labels:
+  - pairs:
+      team: finance
+      project: ecommerce-app
+      tier: backend
+      env: dev
+    includeSelectors: true
+
+commonAnnotations:
+  team: finance
+  maintainer: 'finance@ourcompany.org'
+  repository: 'git-repo'
+
+# images:
+#   - name: nginx
+#     newTag: '1.27.1'
+
+replicas:
+  - name: nginx
+    count: 2
+
+generatorOptions: # Global Options
+  disableNameSuffixHash: false # Turns on or off adding a suffix hash to the name.
+
+configMapGenerator:
+  - name: feature-flags-config
+    literals:
+      - use_db=true
+      - expose_metrics=true
+      - some_other_feature=true
+    #options:
+    #  disableNameSuffixHash: true # adds a hash to the name.
+  - name: db-init-config
+    files:
+      - db-init.js
+
+secretGenerator:
+  - name: local-config
+    envs:
+      - .env.local
+    type: Opaque
+
+patches:
+  - path: use-latest-tag.patch.yaml
+  - path: mount-db-init.patch.yaml
+  - path: remove-resources.patch.yaml # JSON based patch
+    target:
+      group: apps # apps/v1
+      version: v1
+      kind: Deployment
+      name: nginx

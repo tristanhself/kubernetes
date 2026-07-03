@@ -1,0 +1,30 @@
+# Pod Definition
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+  - image: nginx:1.27.0-alpine
+    name: nginx-container
+    ports:
+    - containerPort: 80
+---
+
+# Service Definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx

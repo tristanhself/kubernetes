@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Kanban</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="header">
+    <div>
+      <h1>Simple Kanban</h1>
+      <p>Track tasks across To do, Doing, and Done.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="new-task card">
+      <h2>Add task</h2>
+      <form method="post" action="{{ url_for('create_task') }}" class="task-form">
+        <input name="title" placeholder="Task title" required>
+        <textarea name="description" placeholder="Optional description"></textarea>
+        <select name="status">
+          <option value="todo">To do</option>
+          <option value="doing">Doing</option>
+          <option value="done">Done</option>
+        </select>
+        <button type="submit">Add task</button>
+      </form>
+    </section>
+
+    <section class="board">
+      {% for status in statuses %}
+      <div class="column" data-status="{{ status }}">
+        <h2>{{ {'todo': 'To do', 'doing': 'Doing', 'done': 'Done'}[status] }}</h2>
+        <div class="drop-zone" data-status="{{ status }}">
+          {% for task in grouped[status] %}
+          <article class="task card" draggable="true" data-id="{{ task.id }}">
+            <form method="post" action="{{ url_for('update_task', task_id=task.id) }}">
+              <input name="title" value="{{ task.title }}" required>
+              <textarea name="description">{{ task.description }}</textarea>
+              <select name="status">
+                <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>To do</option>
+                <option value="doing" {% if task.status == 'doing' %}selected{% endif %}>Doing</option>
+                <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
+              </select>
+              <div class="actions">
+                <button type="submit">Update</button>
+                <button form="delete-{{ task.id }}" class="danger" type="submit">Delete</button>
+              </div>
+            </form>
+            <form id="delete-{{ task.id }}" method="post" action="{{ url_for('delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?')"></form>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: traffic-generator
+  namespace: dev
+  labels:
+    app: traffic-generator
+spec:
+  containers:
+    - name: traffic-generator
+      image: geekmungus/traffic-gen:1.0.0
+      args:
+        - 'color-svc.default.svc.cluster.local'
+        - '0.5'
+      resources:
+        requests:
+          cpu: '250m'
+          memory: '256Mi'
+        limits:
+          cpu: '500m'
+          memory: '512Mi'

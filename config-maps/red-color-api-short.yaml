@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: red-color-api
+  labels:
+    app: red-color-api
+spec:
+  containers:
+  - name: red-color-api
+    image: geekmungus/color-api:1.4.0
+    envFrom:
+      - configMapRef:
+          name: red-config
+    resources:
+      requests:
+        cpu: '200m'
+        memory: '256Mi'
+      limits:
+        cpu: '500m'
+        memory: '512Mi'
+    ports:
+      - containerPort: 80

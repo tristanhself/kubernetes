@@ -1,0 +1,33 @@
+# Use a pinned slim base to reduce size and avoid latest tag drift.
+FROM python:3.12-slim
+
+# Keep logs immediate and avoid writing bytecode files at runtime.
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Use a stable application directory for predictable paths.
+WORKDIR /app
+
+# Copy dependency metadata first so Docker can cache package installs.
+COPY requirements.txt .
+
+# Disable pip's cache to keep the final image smaller.
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy only the runtime application code after dependencies are installed.
+COPY app.py .
+
+# Create a dedicated unprivileged user for the production process.
+RUN useradd --create-home --uid 10001 appuser
+
+# Drop root privileges before starting the API.
+USER appuser
+
+# Document the port the API listens on.
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Use Gunicorn instead of Flask's development server in production.
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: green-color-api
+  labels:
+    app: green-color-api
+spec:
+  containers:
+  - name: green-color-api
+    image: geekmungus/color-api:1.4.0
+    envFrom:
+      - configMapRef:
+          name: green-env-vars
+    volumeMounts:
+      - name: color-config
+        mountPath: /mnt/config
+        readOnly: true
+    resources:
+      requests:
+        cpu: '200m'
+        memory: '256Mi'
+      limits:
+        cpu: '500m'
+        memory: '512Mi'
+    ports:
+      - containerPort: 80
+  volumes:
+    - name: color-config
+      configMap:
+        name: green-files
