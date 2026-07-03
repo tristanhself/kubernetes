@@ -1,0 +1,44 @@
+# Deployment Definition
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-custom
+  labels:
+    app: nginx-custom
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-custom
+  template:
+    metadata:
+      labels:
+        app: nginx-custom
+    spec:
+      containers:
+        - name: nginx-custom
+          image: geekmungus/nginx-custom:v1.0.0
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 256m
+              memory: 128Mi
+            limits:
+              cpu: 512m
+              memory: 256Mi
+---
+# Service Definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-custom-service
+  labels:
+    app: nginx-custom
+spec: 
+  type: LoadBalancer
+  selector:
+    app: nginx-custom
+  ports:
+  - port: 80
+    targetPort: 80
