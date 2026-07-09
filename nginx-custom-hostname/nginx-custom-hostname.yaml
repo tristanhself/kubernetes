@@ -6,7 +6,7 @@ metadata:
   labels:
     app: nginx-custom
 spec:
-  replicas: 3
+  replicas: 6
   selector:
     matchLabels:
       app: nginx-custom
@@ -32,6 +32,30 @@ spec:
             limits:
               cpu: 512m
               memory: 256Mi
+          startupProbe: # Probe to check container has started successfully. Runs only at startup.
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe: # Probe to check application is working correctly. Runs periodically as per the "periodSeconds" value.
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe: # Probe to check container is ready to accept traffic, i.e. after loading files, warming caches etc. Can ensure container is accepting traffic after load spikes for example.
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
 ---
 # Service Definition
 apiVersion: v1
