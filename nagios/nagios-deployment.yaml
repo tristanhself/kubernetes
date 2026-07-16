@@ -1,0 +1,57 @@
+# Deployment Definition
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nagios
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nagios
+  namespace: nagios
+  labels:
+    app: nagios
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: nagios
+  template:
+    metadata:
+      labels:
+        app: nagios
+    spec:
+      containers:
+        - name: nagios
+          image: manios/nagios
+          ports:
+            - containerPort: 80
+          # env:
+          #   - name: NAGIOSADMIN_USER
+          #     value: "nagiosadmin"
+          #   - name: NAGIOSADMIN_PASS
+          #     value: "super-Duper-Secret!"          
+          resources:
+            requests:
+              cpu: 1024m
+              memory: 1024Mi
+            limits:
+              cpu: 4096m
+              memory: 4096Mi
+---
+# Service Definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: nagios-service
+  namespace: nagios
+  labels:
+    app: nagios
+spec: 
+  type: LoadBalancer
+  allocateLoadBalancerNodePorts: true # Requires a redeploy to add or remove.
+  selector:
+    app: nagios
+  ports:
+  - port: 80
+    targetPort: 80
