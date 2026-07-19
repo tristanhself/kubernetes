@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: podgetter
+  namespace: podgetter
+spec:
+  serviceAccountName: svcacct-get-pods
+  containers:
+  - name: podgetter
+    image: bitnami/kubectl:latest
+    command: ['sh', '-c', 'kubectl get pods && kubectl get services']
+  restartPolicy: Never
