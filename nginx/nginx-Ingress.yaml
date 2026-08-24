@@ -1,0 +1,125 @@
+# Demo Site 1 Pod Definition
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo-site1
+  labels:
+    app: nginx-demo-site1
+spec:
+  containers:
+  - image: geekmungus/nginx-demo-site1:1.0.0
+    name: nginx-demo-site1
+    ports:
+    - containerPort: 80
+---
+# Demo Site 2 Pod Definition
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo-site2
+  labels:
+    app: nginx-demo-site2
+spec:
+  containers:
+  - image: geekmungus/nginx-demo-site2:1.0.0
+    name: nginx-demo-site2
+    ports:
+    - containerPort: 80
+---
+# Demo Site 3 Pod Definition
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo-site3
+  labels:
+    app: nginx-demo-site3
+spec:
+  containers:
+  - image: geekmungus/nginx-demo-site3:1.0.0
+    name: nginx-demo-site3
+    ports:
+    - containerPort: 80
+---
+# Demo Site 1 Service Definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-demo-site1
+  labels:
+    app: nginx-demo-site1
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx-demo-site1
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Demo Site 2 Service Definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-demo-site2
+  labels:
+    app: nginx-demo-site2
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx-demo-site2
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Demo Site 3 Service Definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-demo-site3
+  labels:
+    app: nginx-demo-site3
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx-demo-site3
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-demo-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: nginx-demo-site1.domain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-demo-site1
+                port:
+                  number: 80
+    - host: nginx-demo-site2.domain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-demo-site2
+                port:
+                  number: 80
+    - host: nginx-demo-site3.domain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-demo-site3
+                port:
+                  number: 80
